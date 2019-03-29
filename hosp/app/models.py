@@ -32,7 +32,7 @@ class Person(models.Model): # Base class
     p_number = models.CharField(blank=False, max_length=100)
     address = models.CharField(blank=False, max_length=100)
     phone = models.CharField(blank=False, max_length=100)
-    sick_hist_id = models.ForeignKey(SickHistory, on_delete=models.SET_NULL, null=True)
+    sick_hist = models.ManyToManyField(SickHistory)
 
 class Patient(Person):
     MED_STATE = (
