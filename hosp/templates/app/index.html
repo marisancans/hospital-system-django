@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load app_extras %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+
+{% if user.is_authenticated %}
+  Hi {{ user.username }}!
+  <p><a href="{% url 'logout' %}">logout</a></p>
+
+
+    {% if patients %}
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Vārds</th>
+                    <th scope="col">Uzvārds</th>
+                    <th scope="col">Personas kods</th>
+                    <th scope="col">Stāvoklis</th>
+                </tr>
+            </thead>
+            {% for p in patients %}
+            <tbody>
+                    <tr>
+                        <th scope="row">{{ p.patient_id }}</th>
+                        <td><a href="/patients/{{ p.patient_id }}/">{{ p.name }}</a></td>
+                        <td>{{ p.surname }}</td>
+                        <td>{{ p.p_number }}</td>
+                        <td>{{ med_state_dict|get_item:p.medical_state }}</td>
+                    </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No patients are available.</p>
+    {% endif %}
+
+
+ 
+   
+
+   
+
+    
+
+
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}
