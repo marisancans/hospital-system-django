@@ -48,16 +48,51 @@
 
 
 
-<div class="row mt-3">
+<div class="row mt-3 pb-3">
     <div class="col-sm-12">
         <div class="card rounded-0">
             <div class="card-header">
                 Slimības vēsture
+                <a class="btn btn-link text-dark" href="{% url 'sick_history_new' patient.pk %}">
+                    <i class="fa fa-plus"></i></a>
+
             </div>
             <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Cēlonis</th>
+                            <th scope="col">Saslimšanas datums</th>
+                            <th scope="col">Darbības</th>
+                        </tr>
+                    </thead>
+                    {% for hist in sick_history %}
+                        <tbody>
+                            <tr>
+                                <td><a href="/sick_histories/{{ hist.sick_hist_id }}/">{{ hist.sick_hist_id }}</a></td>
+                                <td>{{ hist.cause }}</td>
+                                <td>{{ hist.date_sickness }}</td>
+                                <td>
+                                    <div class="row">
+                                            <form action="{% url 'sick_history_delete' hist.pk %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-link text-dark">
+                                                    <i class="fa fa-trash-o text-danger"></i>
+                                                </button>
+                                            </form>
+                                            <form action="{% url 'sick_history_edit' hist.pk %}" method="get">
+                                                {% csrf_token %}    
+                                                <button type="submit" class="btn btn-link text-dark">
+                                                    <i class="fa fa-pencil-square-o"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    {%endfor%}
+                </table>
             </div>
         </div>
     </div>

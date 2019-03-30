@@ -12,9 +12,8 @@ from app.models import Room, Receipt, SickHistory, MedHistory, Patient
 
 five_yrs_ago = datetime.now() - relativedelta(years=5)
 
-def create_sick_history():
+def create_sick_history(count, patient):
     hist_set = []
-    count = fake.random_int(min=1, max=5)
 
     for x in range(count):
         cause = "".join(fake.paragraphs(nb=3))
@@ -22,13 +21,14 @@ def create_sick_history():
 
         p, created = SickHistory.objects.get_or_create(
             cause=cause,
-            date_sickness=date_sickness 
+            date_sickness=date_sickness, 
+            patient=patient
         )
-        hist_set.append(p)
+        
 
     return hist_set
 
-for x in range(1):
+for x in range(25):
     name = fake.first_name()
     surname = fake.last_name()
     p_number = str(fake.random_number(digits=6)) + "-" + str(fake.random_number(digits=5))
@@ -41,9 +41,6 @@ for x in range(1):
     medical_state = fake.random_int(min=1, max=3)
     
     n_hist = fake.random_int(min=1, max=5)
-    #for x in range(n_hist):
-    create_sick_history()
-
 
     p, created = Patient.objects.get_or_create(
         name=name,
@@ -56,8 +53,9 @@ for x in range(1):
         medical_state=medical_state,
     )
 
-    s = create_sick_history()
-    p.sick_hist.set(s)
 
-    print("Patient {} : {} with {} sick history".format(x, created, len(s)))
+    sick_history_count = fake.random_int(min=5, max=25)
+    create_sick_history(sick_history_count, p)
+
+    print("Patient {} : {} with {} sick history".format(p.patient_id, created, sick_history_count))
 

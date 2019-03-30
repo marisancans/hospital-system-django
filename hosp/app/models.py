@@ -2,21 +2,13 @@ from django.db import models
 
 # Create your models here.
 
-class Room(models.Model):
-    room_id = models.AutoField(primary_key=True)
-    equipment = models.CharField(blank=False, max_length=100)
-    date_assigned = models.DateTimeField(blank=False, auto_now=False, auto_now_add=False)
+
 
 class Receipt(models.Model):
     receipt_id = models.AutoField(primary_key=True)
     total = models.FloatField(blank=False, default=0)
     date_crated = models.DateTimeField(auto_now_add=True)
-    room_id = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
-
-class SickHistory(models.Model):
-    sick_hist_id = models.AutoField(primary_key=True)
-    cause = models.TextField(blank=False)
-    date_sickness = models.DateField(blank=False, auto_now=False, auto_now_add=False)
+    
 
 class MedHistory(models.Model):
     medicament_id = models.AutoField(primary_key=True)
@@ -32,7 +24,7 @@ class Person(models.Model): # Base class
     p_number = models.CharField(blank=False, max_length=100)
     address = models.CharField(blank=False, max_length=100)
     phone = models.CharField(blank=False, max_length=100)
-    sick_hist = models.ManyToManyField(SickHistory)
+    
 
 class Patient(Person):
     MED_STATE = (
@@ -50,3 +42,20 @@ class Patient(Person):
 
     def medical_state_name(self):
         return dict(self.MED_STATE).get(self.medical_state)
+
+    def __str__(self):
+        return self.full_name()
+
+
+class SickHistory(models.Model):
+    sick_hist_id = models.AutoField(primary_key=True)
+    cause = models.TextField(blank=False)
+    date_sickness = models.DateField(blank=False, auto_now=False, auto_now_add=False)
+    patient = models.ForeignKey(Patient, related_name='sick_history', on_delete=models.SET_NULL, null=True)
+
+class Room(models.Model):
+    room_id = models.AutoField(primary_key=True)
+    equipment = models.CharField(blank=False, max_length=100)
+    date_assigned = models.DateTimeField(blank=False, auto_now=False, auto_now_add=False)
+    receipt = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True)
+    patient = models.OneToOneField(Patient, on_delete=models.SET_NULL, null=True)

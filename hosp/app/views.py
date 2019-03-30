@@ -1,13 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import redirect
+from django.contrib import messages
 
-from .models import Patient
+
+from app.forms import SickHistoryForm
+
+
+
+from .models import Patient, SickHistory
 
 def index(request):
     patients = Patient.objects.all()
     context = {'patients': patients, 'med_state_dict': dict(Patient.MED_STATE)}
     return render(request, 'app/index.html', context)
 
-def detail_patient(request, patient_id):
+def patient_detail(request, patient_id):
     try:
         p = Patient.objects.get(pk=patient_id)
         p_info_text = ["pacienta id", "vārds", "uzvārds", "personas kods", "adrese", "telefona numurs"]
@@ -18,6 +26,64 @@ def detail_patient(request, patient_id):
 
         p_info = zip(p_info_text, p_info_data)
         p_care = zip(p_care_text, p_care_data)
+
+        sick_history = p.sick_history.all()
     except Patient.DoesNotExist:
         raise Http404("Patient does not exist")
-    return render(request, 'patients/detail.html', {'patient': p, 'patient_info': p_info, 'patient_care': p_care})
+    return render(request, 'patients/detail.html', {'patient': p, 'patient_info': p_info, 'patient_care': p_care, 'sick_history': sick_history})
+
+
+def sick_history_detail(request, sick_hist_id):
+    try:
+        s = SickHistory.objects.get(pk=sick_hist_id)
+        s_text = ["slimības vēstures id", "pacients",  "cēlonis", "saslimšanas datums"]
+        s_data = [s.sick_hist_id, s.patient.full_name(), s.cause, s.date_sickness]
+        s_info = zip(s_text, s_data)
+
+    except SickHistory.DoesNotExist:
+        raise Http404("Sick history does not exist")
+    return render(request, 'sick_history/detail.html', {'sick_history_info': s_info, 'sick_history': s})
+
+
+def sick_history_delete(request, sick_hist_id):
+    try:
+        s = SickHistory.objects.get(pk=sick_hist_id)
+        patient_id = s.patient.patient_id
+        s.delete()
+        messages.success(request, "Successfully deleted")
+
+    except SickHistory.DoesNotExist:
+        raise Http404("Sick history does not exist")
+    return redirect("patient_detail", patient_id)
+
+
+def sick_history_new(request, patient_id):
+    patient = Patient.objects.filter(pk=patient_id)[0]
+
+    if request.method == "POST":
+        form = SickHistoryForm(request.POST, pat=patient)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully created medical history")
+            return redirect("patient_detail", patient_id)
+    else:
+        form = SickHistoryForm(pat=patient)
+    return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient_id})
+
+
+def sick_history_edit(request, pk):
+    sick_history = get_object_or_404(SickHistory, pk=pk)
+    patient = sick_history.patient
+
+    if request.method == "POST":
+        form = SickHistoryForm(request.POST, pat=patient)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated medical history")
+            return redirect("patient_detail", patient.patient_id)
+    else:
+        form = SickHistoryForm(instance=sick_history, pat=patient)
+    return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
+    

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load app_extras %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12 mt-3 pb-3">
+        <div class="card h-100 rounded-0">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-3">Slimības vēstures info</div>
+                    <form action="{% url 'sick_history_delete' sick_history.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link text-dark">
+                            <i class="fa fa-trash-o text-danger"></i>
+                        </button>
+                    </form>
+                    <form action="{% url 'sick_history_edit' sick_history.pk %}" method="get">
+                        {% csrf_token %}    
+                        <button type="submit" class="btn btn-link text-dark">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                {% for text, data in sick_history_info %}
+                    <div class="row">
+                        <div class="col-sm-2 text-right text-secondary">
+                            {{ text|title }}
+                        </div>
+                        <div class="col-sm-10 text-left">
+                            {{ data }}
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
