@@ -1,0 +1,31 @@
+<div class="card rounded-0">
+    <div class="card-header">
+        <!-- <a class="btn btn-link text-dark" href="{% url 'sick_history_new' patient.pk %}"> -->
+            <!-- <i class="fa fa-plus"></i></a> -->
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nosaukums</th>
+                    <th scope="col">Cena</th>
+                    <th scope="col">Rēķina id</th>
+                    <th scope="col">Deva</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in med_history %}
+                    <tr>
+                        <td>{{ med.medicament_id }}</td>
+                        <td>{{ med.name }}</td>
+                        <td>{{ med.price }}</td>
+                        <td>{{ med.receipt_id }}</td>
+                        <td>{{ med.dose}}</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+

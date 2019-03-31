@@ -4,11 +4,11 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 
-from app.forms import SickHistoryForm
+from app.forms import SickHistoryForm, PatientForm
 
 
 
-from .models import Patient, SickHistory
+from .models import Patient, SickHistory, Room
 
 def index(request):
     patients = Patient.objects.all()
@@ -18,6 +18,8 @@ def index(request):
 def patient_detail(request, patient_id):
     try:
         p = Patient.objects.get(pk=patient_id)
+        room = Room.objects.get(patient=p)
+
         p_info_text = ["pacienta id", "vārds", "uzvārds", "personas kods", "adrese", "telefona numurs"]
         p_info_data = [p.patient_id, p.name, p.surname, p.p_number, p.address, p.phone]
         
@@ -28,9 +30,36 @@ def patient_detail(request, patient_id):
         p_care = zip(p_care_text, p_care_data)
 
         sick_history = p.sick_history.all()
+        med_history = p.medicament_history.all()
+        print(med_history.count())
+
     except Patient.DoesNotExist:
         raise Http404("Patient does not exist")
-    return render(request, 'patients/detail.html', {'patient': p, 'patient_info': p_info, 'patient_care': p_care, 'sick_history': sick_history})
+
+    queryset =  {'patient': p, 
+                'patient_info': p_info, 
+                'patient_care': p_care, 
+                'sick_history': sick_history, 
+                'room': room,
+                'med_history': med_history}
+    return render(request, 'patients/detail.html', queryset)
+
+
+def patient_edit(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    room = Room.objects.get(patient=patient)
+
+    if request.method == "POST":
+        form = PatientForm(request.POST, instance=patient, c_room=room)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated patient")
+            return redirect("patient_detail", patient.patient_id)
+    else:
+        form = PatientForm(instance=patient, c_room=room)
+    return render(request, 'patients/edit.html', {'form': form })
+
 
 
 def sick_history_detail(request, sick_hist_id):
@@ -77,7 +106,7 @@ def sick_history_edit(request, pk):
     patient = sick_history.patient
 
     if request.method == "POST":
-        form = SickHistoryForm(request.POST, pat=patient)
+        form = SickHistoryForm(request.POST, pat=patient, instance=sick_history)
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
@@ -87,3 +116,17 @@ def sick_history_edit(request, pk):
         form = SickHistoryForm(instance=sick_history, pat=patient)
     return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
     
+def room_edit(request, pk):
+    room = get_object_or_404(Room, pk=pk)
+    patient = room.patient
+
+    if request.method == "POST":
+        form = SickHistoryForm(request.POST, pat=patient)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated medical history")
+            return redirect("patient_detail", patient.patient_id)
+    else:
+        form = SickHistoryForm(instance=sick_history, pat=patient)
+    return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})

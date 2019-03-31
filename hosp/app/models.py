@@ -9,15 +9,6 @@ class Receipt(models.Model):
     total = models.FloatField(blank=False, default=0)
     date_crated = models.DateTimeField(auto_now_add=True)
     
-
-class MedHistory(models.Model):
-    medicament_id = models.AutoField(primary_key=True)
-    name = models.CharField(blank=False, max_length=100)
-    price = models.FloatField(blank=False, default=0)
-    receipt_id = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True)
-    dose = models.FloatField(blank=False, default=0)
-
-
 class Person(models.Model): # Base class
     name = models.CharField(blank=False, max_length=100)
     surname = models.CharField(blank=False, max_length=100)
@@ -57,5 +48,12 @@ class Room(models.Model):
     room_id = models.AutoField(primary_key=True)
     equipment = models.CharField(blank=False, max_length=100)
     date_assigned = models.DateTimeField(blank=False, auto_now=False, auto_now_add=False)
-    receipt = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True)
-    patient = models.OneToOneField(Patient, on_delete=models.SET_NULL, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, related_name='current_room')
+
+class MedHistory(models.Model):
+    medicament_id = models.AutoField(primary_key=True)
+    name = models.CharField(blank=False, max_length=100)
+    price = models.FloatField(blank=False, default=0)
+    receipt_id = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True)
+    dose = models.FloatField(blank=False, default=0)
+    patient = models.ForeignKey(Patient, related_name='medicament_history', on_delete=models.SET_NULL, null=True)

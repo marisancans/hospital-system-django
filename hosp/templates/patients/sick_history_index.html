@@ -1,0 +1,40 @@
+<div class="card rounded-0">
+    <div class="card-header">
+        <a class="btn btn-link text-dark" href="{% url 'sick_history_new' patient.pk %}">
+            <i class="fa fa-plus"></i></a>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Cēlonis</th>
+                    <th scope="col">Saslimšanas datums</th>
+                    <th scope="col">Darbības</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hist in sick_history %}
+                    <tr>
+                        <td><a href="/sick_histories/{{ hist.sick_hist_id }}/">{{ hist.sick_hist_id }}</a></td>
+                        <td>{{ hist.cause }}</td>
+                        <td>{{ hist.date_sickness }}</td>
+                        <td>
+                            <div class="row">
+                                <form action="{% url 'sick_history_delete' hist.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link text-dark">
+                                        <i class="fa fa-trash-o text-danger"></i>
+                                    </button>
+                                </form>
+                                <a class="btn btn-link text-dark" href="{% url 'sick_history_edit' hist.pk %}">
+                                    <i class="fa fa-pencil-square-o"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+
