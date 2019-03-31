@@ -1,7 +1,7 @@
 <div class="card rounded-0">
     <div class="card-header">
-        <!-- <a class="btn btn-link text-dark" href="{% url 'sick_history_new' patient.pk %}"> -->
-            <!-- <i class="fa fa-plus"></i></a> -->
+        <a class="btn btn-link text-dark" href="{% url 'med_history_new' patient.patient_id %}">
+            <i class="fa fa-plus"></i></a>
     </div>
     <div class="card-body">
         <table class="table table-bordered">
@@ -12,6 +12,7 @@
                     <th scope="col">Cena</th>
                     <th scope="col">Rēķina id</th>
                     <th scope="col">Deva</th>
+                    <th scope="col">Darbības</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,6 +23,18 @@
                         <td>{{ med.price }}</td>
                         <td>{{ med.receipt_id }}</td>
                         <td>{{ med.dose}}</td>
+                        <td>
+                            <div class="row">
+                                <form action="{% url 'med_history_delete' med.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link text-dark">
+                                        <i class="fa fa-trash-o text-danger"></i>
+                                    </button>
+                                </form>
+                                <a class="btn btn-link text-dark" href="{% url 'med_history_edit' med.pk %}">
+                                    <i class="fa fa-pencil-square-o"></i></a>
+                            </div>
+                        </td>
                     </tr>
                 {%endfor%}
             </tbody>

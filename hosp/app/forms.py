@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import SickHistory, Patient, Room
+from .models import SickHistory, Patient, Room, MedHistory
 
 
 class SickHistoryForm(ModelForm):
@@ -15,6 +15,18 @@ class SickHistoryForm(ModelForm):
     class Meta:
         model = SickHistory
         fields = ['cause', 'date_sickness', 'patient']
+        #labels = {'Cēlonis': 'Book title', }
+
+
+class MedHistoryForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        patient = kwargs.pop('pat')
+        super(MedHistoryForm, self).__init__(*args, **kwargs)
+        self.fields['patient'].initial = patient
+
+    class Meta:
+        model = MedHistory
+        fields = ['name', 'price', 'dose', 'patient']
         #labels = {'Cēlonis': 'Book title', }
 
 

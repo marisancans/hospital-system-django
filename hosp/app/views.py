@@ -4,16 +4,17 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 
-from app.forms import SickHistoryForm, PatientForm
+from app.forms import SickHistoryForm, PatientForm, MedHistoryForm
 
 
 
-from .models import Patient, SickHistory, Room
+from .models import Patient, SickHistory, Room, MedHistory
 
 def index(request):
     patients = Patient.objects.all()
     context = {'patients': patients, 'med_state_dict': dict(Patient.MED_STATE)}
     return render(request, 'app/index.html', context)
+
 
 def patient_detail(request, patient_id):
     try:
@@ -79,7 +80,7 @@ def sick_history_delete(request, sick_hist_id):
         s = SickHistory.objects.get(pk=sick_hist_id)
         patient_id = s.patient.patient_id
         s.delete()
-        messages.success(request, "Successfully deleted")
+        messages.success(request, "Successfully deleted sick history")
 
     except SickHistory.DoesNotExist:
         raise Http404("Sick history does not exist")
@@ -116,6 +117,52 @@ def sick_history_edit(request, pk):
         form = SickHistoryForm(instance=sick_history, pat=patient)
     return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
     
+
+
+def med_history_delete(request, pk):
+    try:
+        m = MedHistory.objects.get(pk=pk)
+        patient_id = m.patient.patient_id
+        m.delete()
+        messages.success(request, "Successfully deleted medical history")
+
+    except MedHistory.DoesNotExist:
+        raise Http404("Medical history does not exist")
+    return redirect("patient_detail", patient_id)
+
+
+def med_history_edit(request, pk):
+    med_history = get_object_or_404(MedHistory, pk=pk)
+    patient = med_history.patient
+
+    if request.method == "POST":
+        form = MedHistoryForm(request.POST, pat=patient, instance=med_history)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated medicament history")
+            return redirect("patient_detail", patient.patient_id)
+    else:
+        form = MedHistoryForm(instance=med_history, pat=patient)
+    return render(request, 'med_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
+
+
+def med_history_new(request, patient_id):
+    patient = Patient.objects.filter(pk=patient_id)[0]
+
+    if request.method == "POST":
+        form = MedHistoryForm(request.POST, pat=patient)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully created medicament history")
+            return redirect("patient_detail", patient_id)
+    else:
+        form = MedHistoryForm(pat=patient)
+    return render(request, 'med_history/edit.html', {'form': form, 'patient_id': patient_id})
+
+
+
 def room_edit(request, pk):
     room = get_object_or_404(Room, pk=pk)
     patient = room.patient
@@ -130,3 +177,6 @@ def room_edit(request, pk):
     else:
         form = SickHistoryForm(instance=sick_history, pat=patient)
     return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
+
+
+    
