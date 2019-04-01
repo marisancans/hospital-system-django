@@ -7,10 +7,6 @@
 
 
 {% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">logout</a></p>
-
-
     {% if patients %}
         <table class="table table-bordered">
             <thead class="thead-dark">

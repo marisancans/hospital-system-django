@@ -25,7 +25,7 @@ def create_sick_history(count, patient):
         )
 
 
-def create_room(patient):
+def create_room():
     equipment = "".join(fake.sentence(nb_words=6))
     date_assigned = fake.date_time_between_dates(datetime_start=five_yrs_ago)
     #receipt = skipped
@@ -33,8 +33,8 @@ def create_room(patient):
     p, created = Room.objects.get_or_create(
             equipment=equipment,
             date_assigned=date_assigned, 
-            patient=patient
         )
+    return p
 
     
 
@@ -63,6 +63,7 @@ for x in range(5):
     care_date_to = fake.date_between_dates(date_start=care_date_from)
     medical_state = fake.random_int(min=1, max=3)
     n_hist = fake.random_int(min=1, max=5)
+    room = create_room()
 
     p, created = Patient.objects.get_or_create(
         name=name,
@@ -73,6 +74,7 @@ for x in range(5):
         care_date_from=care_date_from,
         care_date_to=care_date_to,
         medical_state=medical_state,
+        room=room,
     )
 
 
@@ -82,7 +84,6 @@ for x in range(5):
 
     create_sick_history(sick_history_count, p)
     create_med_hist(med_hist_count, p)
-    create_room(p)
 
     print("Patient {} : {} with {} sick history".format(p.patient_id, created, sick_history_count))
 

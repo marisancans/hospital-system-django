@@ -62,6 +62,20 @@ def patient_edit(request, pk):
     return render(request, 'patients/edit.html', {'form': form })
 
 
+def patient_new(request):
+    if request.method == "POST":
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully created patient")
+            patient_id = data.patient_id
+            return redirect("patient_detail", patient_id)
+    else:
+        form = PatientForm()
+    return render(request, 'patients/edit.html', {'form': form})
+
+
 
 def sick_history_detail(request, sick_hist_id):
     try:
