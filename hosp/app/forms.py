@@ -34,10 +34,6 @@ class PatientForm(ModelForm):
     care_date_from = forms.DateField(widget=forms.SelectDateWidget)
     care_date_to = forms.DateField(widget=forms.SelectDateWidget)
    
-    def __init__(self, *args, **kwargs):
-        super(PatientForm, self).__init__(*args, **kwargs)
-
-
     class Meta:
         model = Patient
         fields = ['name', 'surname', 'p_number', 'address', 'phone', 'room', 'care_date_from', 'care_date_to']

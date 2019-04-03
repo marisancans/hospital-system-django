@@ -19,7 +19,7 @@ def index(request):
 def patient_detail(request, patient_id):
     try:
         p = Patient.objects.get(pk=patient_id)
-        room = Room.objects.get(patient=p)
+        room = p.room
 
         p_info_text = ["pacienta id", "vārds", "uzvārds", "personas kods", "adrese", "telefona numurs"]
         p_info_data = [p.patient_id, p.name, p.surname, p.p_number, p.address, p.phone]
@@ -48,17 +48,16 @@ def patient_detail(request, patient_id):
 
 def patient_edit(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
-    room = Room.objects.get(patient=patient)
 
     if request.method == "POST":
-        form = PatientForm(request.POST, instance=patient, c_room=room)
+        form = PatientForm(request.POST, instance=patient)
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
             messages.success(request, "Successfully updated patient")
             return redirect("patient_detail", patient.patient_id)
     else:
-        form = PatientForm(instance=patient, c_room=room)
+        form = PatientForm(instance=patient)
     return render(request, 'patients/edit.html', {'form': form })
 
 
@@ -74,6 +73,17 @@ def patient_new(request):
     else:
         form = PatientForm()
     return render(request, 'patients/edit.html', {'form': form})
+
+
+def patient_delete(request, pk):
+    try:
+        p = Patient.objects.get(pk=pk)
+        p.delete()
+        messages.success(request, "Successfully deleted patient")
+
+    except Patient.DoesNotExist:
+        raise Http404("Patient does not exist")
+    return redirect("home")
 
 
 
