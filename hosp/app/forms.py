@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import SickHistory, Patient, Room, MedHistory
+from .models import SickHistory, Patient, Room, MedHistory, Profile
+from django.contrib.auth.models import User
 
 
 class SickHistoryForm(ModelForm):
@@ -38,3 +39,10 @@ class PatientForm(ModelForm):
         model = Patient
         fields = ['name', 'surname', 'p_number', 'address', 'phone', 'room', 'care_date_from', 'care_date_to']
         #labels = {'Vārds': 'Uzvārds'}
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["name", "surname", "p_number", "address", "phone"]
+
+

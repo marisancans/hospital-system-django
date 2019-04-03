@@ -4,16 +4,31 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 
-from app.forms import SickHistoryForm, PatientForm, MedHistoryForm
-
-
-
-from .models import Patient, SickHistory, Room, MedHistory
+from app.forms import SickHistoryForm, PatientForm, MedHistoryForm, ProfileForm
+from django.contrib.auth.models import User
+from .models import Patient, SickHistory, Room, MedHistory, Profile
 
 def index(request):
     patients = Patient.objects.all()
     context = {'patients': patients, 'med_state_dict': dict(Patient.MED_STATE)}
     return render(request, 'app/index.html', context)
+
+def profile(request):
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated profile")
+            return redirect("profile")
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'app/profile.html', {'form': form })
+    
+
 
 
 def patient_detail(request, patient_id):
@@ -37,13 +52,13 @@ def patient_detail(request, patient_id):
     except Patient.DoesNotExist:
         raise Http404("Patient does not exist")
 
-    queryset =  {'patient': p, 
+    context =  {'patient': p, 
                 'patient_info': p_info, 
                 'patient_care': p_care, 
                 'sick_history': sick_history, 
                 'room': room,
                 'med_history': med_history}
-    return render(request, 'patients/detail.html', queryset)
+    return render(request, 'patients/detail.html', context)
 
 
 def patient_edit(request, pk):

@@ -9,12 +9,18 @@
         <a class="nav-link" href="{% url 'patient_new' %}">Jauns pacients</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="">Profils</a>
+        <a class="nav-link" href="{% url 'profile' %}">Profils ({{ user.profile.name }})</a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'logout' %}">Iziet</a>
       </li>
     </ul>
+
+    <div class="mx-auto">
+        Slimnīcas pacientu uzskaites Sistēma
+        <i class="fa fa-heartbeat" aria-hidden="true"></i>
+    </div>
+
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
