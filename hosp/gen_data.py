@@ -36,24 +36,43 @@ def create_room():
         )
     return p
 
+def create_receipts(count, patient):
+    for x in range(count):
+        total = 0
+        date_created = fake.date_between_dates(date_start=five_yrs_ago)
+        patient = patient
+
+        dose = fake.pyfloat(left_digits=1, right_digits=2, positive=True)
+
+        p, created = Receipt.objects.get_or_create(
+            total=total,
+            date_created=date_created, 
+            patient=patient
+        )
     
 
 def create_med_hist(count, patient):
+    receipts = patient.receipts.all()
+
     for x in range(count):
         name = "".join(fake.sentence(nb_words=2))[:-1]
-        price = fake.pyfloat(left_digits=3, right_digits=2, positive=True)
-        # receipt_id = # SKIPPED
+        price = fake.pyfloat(left_digits=2, right_digits=2, positive=True)
         dose = fake.pyfloat(left_digits=1, right_digits=2, positive=True)
+
+        receipt = receipts[fake.random_int(min=0, max=receipts.count() - 1)]
+        receipt.total += price
+        receipt.save()
 
         p, created = MedHistory.objects.get_or_create(
             name=name,
             price=price, 
             dose=dose,
+            receipt=receipt,
             patient=patient
         )
 
 
-for x in range(5):
+for x in range(20):
     name = fake.first_name()
     surname = fake.last_name()
     p_number = str(fake.random_number(digits=6)) + "-" + str(fake.random_number(digits=5))
@@ -81,9 +100,11 @@ for x in range(5):
     # Generate related records
     sick_history_count = fake.random_int(min=5, max=25)
     med_hist_count = fake.random_int(min=5, max=25)
+    receipt_count = fake.random_int(min=1, max=5)
 
     create_sick_history(sick_history_count, p)
+    create_receipts(receipt_count, p)
     create_med_hist(med_hist_count, p)
+    
 
-    print("Patient {} : {} with {} sick history".format(p.patient_id, created, sick_history_count))
-
+    print("Patient {} : {}   |   sick history: {}   |   receipts: {}   |   med history: {}   ".format(p.patient_id, created, sick_history_count, receipt_count, med_hist_count))

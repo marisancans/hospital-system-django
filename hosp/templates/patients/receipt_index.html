@@ -1,6 +1,6 @@
 <div class="card rounded-0">
     <div class="card-header">
-        <a class="btn btn-link text-dark" href="{% url 'med_history_new' patient.patient_id %}">
+        <a class="btn btn-link text-dark" href="{% url 'sick_history_new' patient.pk %}">
             <i class="fa fa-plus"></i></a>
     </div>
     <div class="card-body">
@@ -8,30 +8,26 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Nosaukums</th>
-                    <th scope="col">Cena</th>
-                    <th scope="col">Rēķina id</th>
-                    <th scope="col">Deva</th>
+                    <th scope="col">Summa</th>
+                    <th scope="col">Izveidošanas datums</th>
                     <th scope="col">Darbības</th>
                 </tr>
             </thead>
             <tbody>
-                {% for med in med_history %}
+                {% for rec in receipts %}
                     <tr>
-                        <td>{{ med.medicament_id }}</td>
-                        <td>{{ med.name }}</td>
-                        <td>{{ med.price }}</td>
-                        <td>{{ med.receipt.receipt_id }}</td>
-                        <td>{{ med.dose}}</td>
+                        <td>{{ rec.pk }}</td>
+                        <td>{{ rec.total }}</td>
+                        <td>{{ rec.date_created }}</td>
                         <td>
                             <div class="row">
-                                <form action="{% url 'med_history_delete' med.pk %}" method="post">
+                                <form action="{% url 'receipt_delete' rec.pk %}" method="post">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-link text-dark">
                                         <i class="fa fa-trash-o text-danger"></i>
                                     </button>
                                 </form>
-                                <a class="btn btn-link text-dark" href="{% url 'med_history_edit' med.pk %}">
+                                <a class="btn btn-link text-dark" href="{% url 'receipt_edit' rec.pk %}">
                                     <i class="fa fa-pencil-square-o"></i></a>
                             </div>
                         </td>

@@ -6,15 +6,14 @@ from django.dispatch import receiver
 
 
 
-class Receipt(models.Model):
-    receipt_id = models.AutoField(primary_key=True)
-    total = models.FloatField(blank=False, default=0)
-    date_crated = models.DateTimeField(auto_now_add=True)
-    
+
 class Room(models.Model):
     room_id = models.AutoField(primary_key=True)
     equipment = models.CharField(blank=False, max_length=100)
     date_assigned = models.DateTimeField(blank=False, auto_now=False, auto_now_add=False)
+
+    def __str__(self):
+        return str(self.room_id)
 
 class Person(models.Model): # Base class
     name = models.CharField(blank=False, max_length=100)
@@ -24,7 +23,6 @@ class Person(models.Model): # Base class
     phone = models.CharField(blank=False, max_length=100)
     
     
-
 class Patient(Person):
     MED_STATE = (
         ('1', 'Deadly'),
@@ -46,6 +44,12 @@ class Patient(Person):
     def __str__(self):
         return self.full_name()
 
+class Receipt(models.Model):
+    receipt_id = models.AutoField(primary_key=True)
+    total = models.FloatField(blank=False, default=0)
+    date_created = models.DateTimeField(auto_now_add=True)
+    patient = models.ForeignKey(Patient, related_name='receipts', on_delete=models.SET_NULL, null=True)
+
 
 class SickHistory(models.Model):
     sick_hist_id = models.AutoField(primary_key=True)
@@ -57,7 +61,7 @@ class MedHistory(models.Model):
     medicament_id = models.AutoField(primary_key=True)
     name = models.CharField(blank=False, max_length=100)
     price = models.FloatField(blank=False, default=0)
-    receipt_id = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True)
+    receipt = models.ForeignKey(Receipt, on_delete=models.SET_NULL, null=True, related_name='med_history_receipts')
     dose = models.FloatField(blank=False, default=0)
     patient = models.ForeignKey(Patient, related_name='medicament_history', on_delete=models.SET_NULL, null=True)
 

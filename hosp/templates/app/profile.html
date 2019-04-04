@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-pad">
     <h2>Profile rediģēšana</h2>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Saglabāt</button>
+        <button type="submit" class="btn btn-outline-primary">Saglabāt</button>
         <a href="{% url 'password_change' %}">Mainīt paroli</a>
     </form>
+</div>
 {% endblock %}

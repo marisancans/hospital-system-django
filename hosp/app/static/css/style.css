@@ -1,6 +1,17 @@
 body { 
     background: #113f67; 
-    padding-top: 4.5rem
+    padding-top: 3.5rem
 }
-.container { background: #e7eaf6; }
+.container { 
+    background: #e7eaf6; 
+    padding: 0px;    
+}
+
+.container-pad {
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
 

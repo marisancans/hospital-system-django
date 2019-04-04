@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import SickHistory, Patient, Room, MedHistory, Profile
+from .models import SickHistory, Patient, Room, MedHistory, Profile, Receipt
 from django.contrib.auth.models import User
 
 
@@ -37,12 +37,17 @@ class PatientForm(ModelForm):
    
     class Meta:
         model = Patient
-        fields = ['name', 'surname', 'p_number', 'address', 'phone', 'room', 'care_date_from', 'care_date_to']
+        fields = ['name', 'surname', 'p_number', 'address', 'phone', 'room', 'care_date_from', 'care_date_to', 'medical_state']
         #labels = {'Vārds': 'Uzvārds'}
 
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = ["name", "surname", "p_number", "address", "phone"]
+
+class ReceiptForm(ModelForm):
+    class Meta:
+        model = Receipt
+        fields = ["total", "patient"]
 
 

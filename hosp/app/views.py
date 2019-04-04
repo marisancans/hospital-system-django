@@ -2,14 +2,15 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.db.models import Q
 
 
-from app.forms import SickHistoryForm, PatientForm, MedHistoryForm, ProfileForm
+from app.forms import SickHistoryForm, PatientForm, MedHistoryForm, ProfileForm, ReceiptForm
 from django.contrib.auth.models import User
-from .models import Patient, SickHistory, Room, MedHistory, Profile
+from .models import Patient, SickHistory, Room, MedHistory, Profile, Receipt
 
 def index(request):
-    patients = Patient.objects.all()
+    patients = Patient.objects.all().order_by('-patient_id')
     context = {'patients': patients, 'med_state_dict': dict(Patient.MED_STATE)}
     return render(request, 'app/index.html', context)
 
@@ -29,6 +30,11 @@ def profile(request):
     return render(request, 'app/profile.html', {'form': form })
     
 
+def patient_search(request):
+    if request.method == "GET":
+        querry = request.GET["querry"]
+        patients = Patient.objects.filter(Q(name__contains=querry) | Q(surname__contains=querry) |  Q(p_number__contains=querry))
+        return render(request, 'app/index.html', {'patients' : patients, 'med_state_dict': dict(Patient.MED_STATE)})
 
 
 def patient_detail(request, patient_id):
@@ -47,6 +53,7 @@ def patient_detail(request, patient_id):
 
         sick_history = p.sick_history.all()
         med_history = p.medicament_history.all()
+        receipts = p.receipts.all()
         print(med_history.count())
 
     except Patient.DoesNotExist:
@@ -57,7 +64,8 @@ def patient_detail(request, patient_id):
                 'patient_care': p_care, 
                 'sick_history': sick_history, 
                 'room': room,
-                'med_history': med_history}
+                'med_history': med_history,
+                'receipts': receipts}
     return render(request, 'patients/detail.html', context)
 
 
@@ -218,4 +226,30 @@ def room_edit(request, pk):
     return render(request, 'sick_history/edit.html', {'form': form, 'patient_id': patient.patient_id})
 
 
-    
+
+def receipt_delete(request, pk):
+    try:
+        r = Receipt.objects.get(pk=pk)
+        patient_id = r.patient.patient_id
+        r.delete()
+        messages.success(request, "Successfully deleted receipt")
+
+    except Receipt.DoesNotExist:
+        raise Http404("Receipt does not exist")
+    return redirect("patient_detail", patient_id)
+
+
+def receipt_edit(request, pk):
+    receipt = get_object_or_404(Receipt, pk=pk)
+    patient = receipt.patient
+
+    if request.method == "POST":
+        form = ReceiptForm(request.POST, instance=receipt)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.save()
+            messages.success(request, "Successfully updated receipt")
+            return redirect("patient_detail", patient.patient_id)
+    else:
+        form = ReceiptForm(instance=receipt)
+    return render(request, 'receipts/edit.html', {'form': form })

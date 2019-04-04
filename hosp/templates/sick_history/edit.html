@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-pad">
     <h2>Jauna slimības vēsture</h2>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Saglabāt</button>
+        <button type="submit" class="btn btn-outline-primary">Saglabāt</button>
     </form>
+</div>
 {% endblock %}
