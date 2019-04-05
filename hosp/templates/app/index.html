@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<div class="container-pad">
+
 {% if user.is_authenticated %}
     {% if patients %}
         <table class="table table-bordered">
@@ -59,10 +59,10 @@
 
 
 {% else %}
-  <h1 class="text-center">YOU ARE NOT LOGGED IN, YOU FOOL!</h1>
-  <a href="{% url 'login' %}" class="btn btn-lg btn-block btn-outline-primary" role="button" aria-pressed="true">LOGIN HERE, PRESS ME!</a>
+  <h1 class="text-center">Please log in</h1>
+  <a href="{% url 'login' %}" class="btn btn-lg btn-block btn-outline-primary" role="button" aria-pressed="true">Login</a>
 {% endif %}
 
-</div>
+
 
 {% endblock %}
